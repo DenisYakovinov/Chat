@@ -1,5 +1,8 @@
 package ru.job4j.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -16,6 +19,7 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "room_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Room room;
 
     @ManyToOne

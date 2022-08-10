@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.model.Message;
 import ru.job4j.chat.model.Person;
 import ru.job4j.chat.service.MessageService;
@@ -50,7 +51,8 @@ public class MessageController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") int messageId) {
-        Message message = messageService.getById(messageId);
+        Message message = messageService.getById(messageId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message was not found"));
         Person requestUser = userService.findByLogin(
                 (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if (!Objects.equals(requestUser.getId(), message.getPerson().getId())) {

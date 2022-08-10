@@ -5,8 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import ru.job4j.chat.model.Room;
 
-import java.util.Optional;
-
 public interface RoomRepository extends CrudRepository<Room, Long> {
 
     @Query("select distinct r from Room r left join fetch r.messages where r.id = :rId")

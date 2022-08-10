@@ -3,7 +3,6 @@ package ru.job4j.chat.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.job4j.chat.model.Message;
 import ru.job4j.chat.model.Room;
 import ru.job4j.chat.service.RoomService;
 
@@ -28,7 +27,7 @@ public class RoomController {
     public ResponseEntity<Room> getById(@PathVariable long id) {
         var room = roomService.getByIdWithMessages(id);
         return new ResponseEntity<>(
-                roomService.getById(id).orElse(new Room()),
+                room.orElse(new Room()),
                 room.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
         );
     }

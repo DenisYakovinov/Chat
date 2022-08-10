@@ -7,6 +7,7 @@ import ru.job4j.chat.repository.MessageRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MessageService {
@@ -23,8 +24,8 @@ public class MessageService {
         return messages;
     }
 
-    public Message getById(long id) {
-        return messageRepository.findById(id).orElse(new Message());
+    public Optional<Message> getById(long id) {
+        return messageRepository.findById(id);
     }
 
     public Message createOrUpdate(Message message) {

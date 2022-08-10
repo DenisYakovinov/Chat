@@ -4,13 +4,13 @@ Creating a chat on the Rest API.<br>
 REST API Implementation via Spring Boot.<br>
 Contains four Person models. role. room, message.<br>
 The application implements a chat with rooms.
-<br>
+<br> 
 <br>
 in progress..
 
-![chatDBscheme](img/chatDBscheme.png) <br>
+![scheme_db](img/scheme_db.png) <br>
 
-REST API:
+REST API:<br>
 
 first, register user
 ![register](img/register.png) <br>
