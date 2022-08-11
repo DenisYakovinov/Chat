@@ -33,7 +33,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             if ((e.getMostSpecificCause()) instanceof PSQLException) {
                 PSQLException sqlEx = (PSQLException) e.getMostSpecificCause();
                 if (sqlEx.getSQLState().equals("23505")) {
-                    throw new LoginReservedException(sqlEx.getMessage(), sqlEx);
+                    throw new LoginReservedException(String.format("login already reserved please try again (%s)",
+                            sqlEx.getMessage()), sqlEx);
                 }
             }
             throw new ServiceException(String.format("User %s can't be added (%s)", person, e.getMessage()), e);
@@ -54,8 +55,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return personRepository.findById(id);
     }
 
-    public Person findByLogin(String login) {
-        return personRepository.findByLogin(login);
+    public Optional<Person> findByLogin(String login) {
+        return Optional.ofNullable(personRepository.findByLogin(login));
     }
 
     @Override

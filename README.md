@@ -6,6 +6,16 @@ Contains four Person models. role. room, message.<br>
 The application implements a chat with rooms.
 <br> 
 <br>
+<h2>Technologies</h2>
+<ul>
+    <li>Spring Boot</li>
+    <li>Spring MVC</li>
+    <li>Spring Data JPA</li>
+    <li>Spring AOP</li>
+    <li>Spring Security</li>
+    <li>Postgres</li>
+    <Li>liquibase</Li>
+</ul>
 in progress..
 
 ![scheme_db](img/scheme_db.png) <br>

@@ -32,31 +32,49 @@ public class MessageController {
 
     @PostMapping("/")
     public ResponseEntity<Message> create(@RequestBody Message message) {
-        if (message.getRoom().getId() == 0) {
-            return new ResponseEntity("need to specify the room id", HttpStatus.NOT_ACCEPTABLE);
+        if (message.getId() != 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE, "message id must be 0 to create");
         }
-        Person requestPerson = userService.findByLogin(
-                (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        message.setPerson(requestPerson);
+        genericValidate(message);
         return ResponseEntity.ok(messageService.createOrUpdate(message));
     }
 
     @PutMapping("/")
     public ResponseEntity<Message> update(@RequestBody Message message) {
         if (message.getId() == 0) {
-            return new ResponseEntity("to update need to specify existing message id", HttpStatus.NOT_ACCEPTABLE);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE, "message id mustn't be 0 to update");
         }
-        return create(message);
+        genericValidate(message);
+        return ResponseEntity.ok(messageService.createOrUpdate(message));
+    }
+
+    private void genericValidate(Message message) {
+        if (message.getRoom().getId() == 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE, "need to specify the room id");
+        }
+        if (message.getText() == null || message.getText().trim().length() == 0) {
+            throw new NullPointerException("message text mustn't be empty");
+        }
+        Person requestPerson = userService.findByLogin(
+                (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user wasn't found")
+        );
+        message.setPerson(requestPerson);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") int messageId) {
         Message message = messageService.getById(messageId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message was not found"));
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message wasn't found"));
         Person requestUser = userService.findByLogin(
-                (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+                (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user wasn't found")
+        );
         if (!Objects.equals(requestUser.getId(), message.getPerson().getId())) {
-            return new ResponseEntity("another user's message!", HttpStatus.NOT_ACCEPTABLE);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "another user's message!");
         }
         messageService.delete(message);
         return new ResponseEntity<>(HttpStatus.OK);
