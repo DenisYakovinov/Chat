@@ -20,16 +20,16 @@ public class RoomController {
     }
 
     @GetMapping("/")
-    public List<Room> getAll() {
-        return roomService.getAll();
+    public ResponseEntity<List<Room>> getAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(roomService.getAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Room> getById(@PathVariable long id) {
         Room room = roomService.getByIdWithMessages(id).orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "room wasn't found. Please, check requisites."
+                HttpStatus.NOT_FOUND, String.format("room with id = %d wasn't found. Please, check requisites.", id)
         ));
-        return new ResponseEntity<>(room, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(room);
     }
 
     @PostMapping("/")
@@ -41,11 +41,11 @@ public class RoomController {
         if (room.getName() == null) {
             throw new NullPointerException("room name mustn't be null");
         }
-        return new ResponseEntity<>(roomService.createOrUpdate(room), HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(roomService.createOrUpdate(room));
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Room room) {
+    public ResponseEntity<Room> update(@RequestBody Room room) {
         if (room.getId() == 0) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE, "room id mustn't be 0 to update");
@@ -53,8 +53,7 @@ public class RoomController {
         if (room.getName() == null) {
             throw new NullPointerException("room name mustn't be null");
         }
-        roomService.createOrUpdate(room);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(roomService.createOrUpdate(room));
     }
 
     @DeleteMapping("/{id}")
@@ -62,6 +61,6 @@ public class RoomController {
         Room room = new Room();
         room.setId(id);
         roomService.delete(room);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -45,7 +45,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         personRepository.delete(person);
     }
 
-    public List<Person> findAll() {
+    public List<Person> getAll() {
         List<Person> persons = new ArrayList<>();
         personRepository.findAll().forEach(persons::add);
         return persons;

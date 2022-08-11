@@ -26,8 +26,8 @@ public class MessageController {
     }
 
     @GetMapping("/")
-    public List<Message> getAll() {
-        return messageService.getAll();
+    public ResponseEntity<List<Message>> getAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.getAll());
     }
 
     @PostMapping("/")
@@ -37,7 +37,7 @@ public class MessageController {
                     HttpStatus.NOT_ACCEPTABLE, "message id must be 0 to create");
         }
         genericValidate(message);
-        return ResponseEntity.ok(messageService.createOrUpdate(message));
+        return ResponseEntity.status(HttpStatus.CREATED).body(messageService.createOrUpdate(message));
     }
 
     @PutMapping("/")
@@ -47,7 +47,7 @@ public class MessageController {
                     HttpStatus.NOT_ACCEPTABLE, "message id mustn't be 0 to update");
         }
         genericValidate(message);
-        return ResponseEntity.ok(messageService.createOrUpdate(message));
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.createOrUpdate(message));
     }
 
     private void genericValidate(Message message) {
@@ -60,7 +60,7 @@ public class MessageController {
         }
         Person requestPerson = userService.findByLogin(
                 (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user wasn't found")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User (Message owner) wasn't found")
         );
         message.setPerson(requestPerson);
     }
@@ -71,12 +71,12 @@ public class MessageController {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message wasn't found"));
         Person requestUser = userService.findByLogin(
                 (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user wasn't found")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User (Message owner) wasn't found")
         );
         if (!Objects.equals(requestUser.getId(), message.getPerson().getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "another user's message!");
         }
         messageService.delete(message);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

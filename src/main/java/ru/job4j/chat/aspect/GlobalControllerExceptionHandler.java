@@ -36,7 +36,7 @@ public class GlobalControllerExceptionHandler {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setContentType(CONTENT_HEADER);
         response.getWriter().write(objectMapper.writeValueAsString(Stream.of(
-                        new AbstractMap.SimpleEntry<>("message", "Some of fields empty"),
+                        new AbstractMap.SimpleEntry<>("message", "Some of fields are empty"),
                         new AbstractMap.SimpleEntry<>("details", e.getMessage()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
         logger.error(e.getMessage());
@@ -52,12 +52,12 @@ public class GlobalControllerExceptionHandler {
                         new AbstractMap.SimpleEntry<>("message", e.getMessage()),
                         new AbstractMap.SimpleEntry<>("type", e.getClass()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
-        logger.error(e.getMessage());
+        logger.warn(e.getMessage());
     }
 
     @ExceptionHandler(value = { ServiceException.class })
     public ResponseEntity<Object> handleServiceException(ServiceException ex) {
-        logger.error("Business Exception: " + ex.getMessage());
+        logger.error("Business Exception: {}", ex.getMessage());
         return new ResponseEntity<>("Business Exception: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

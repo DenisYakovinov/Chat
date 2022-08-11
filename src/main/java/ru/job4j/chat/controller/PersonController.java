@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.job4j.chat.exception.LoginReservedException;
 import ru.job4j.chat.model.Person;
 import ru.job4j.chat.model.Role;
 import ru.job4j.chat.service.UserDetailsServiceImpl;
@@ -55,27 +54,24 @@ public class PersonController {
         Role userRole = new Role();
         userRole.setId(1);
         person.setRole(userRole);
-        return new ResponseEntity<>(
-                userDetailsServiceImpl.save(person),
-                HttpStatus.CREATED
-        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDetailsServiceImpl.save(person));
     }
 
     @GetMapping("/")
-    public List<Person> getAll() {
-        return userDetailsServiceImpl.findAll();
+    public ResponseEntity<List<Person>> getAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(userDetailsServiceImpl.getAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Person> findById(@PathVariable long id) {
         Person person = userDetailsServiceImpl.findById(id).orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "user wasn't found. Please, check requisites."
+                HttpStatus.NOT_FOUND, String.format("user with id = %d wasn't found. Please, check requisites.", id)
         ));
-        return new ResponseEntity<>(person, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(person);
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
+    public ResponseEntity<Person> update(@RequestBody Person person) {
         if (person.getId() == 0) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE, "message id mustn't be 0 to update");
@@ -86,8 +82,7 @@ public class PersonController {
         if (person.getPassword().length() < 6) {
             throw new IllegalArgumentException("Not really secure password");
         }
-        userDetailsServiceImpl.save(person);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(userDetailsServiceImpl.save(person));
     }
 
     @DeleteMapping("/{id}")
@@ -95,7 +90,7 @@ public class PersonController {
         Person person = new Person();
         person.setId(id);
         userDetailsServiceImpl.delete(person);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
