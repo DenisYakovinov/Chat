@@ -5,18 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.job4j.chat.exception.LoginReservedException;
-import ru.job4j.chat.exception.RoomNameReservedException;
-import ru.job4j.chat.exception.ServiceException;
+import ru.job4j.chat.exception.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
@@ -31,33 +27,38 @@ public class GlobalControllerExceptionHandler {
         this.objectMapper = objectMapper;
     }
 
-    @ExceptionHandler(value = {NullPointerException.class})
-    public void handleException(Exception e, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setContentType(CONTENT_HEADER);
-        response.getWriter().write(objectMapper.writeValueAsString(Stream.of(
-                        new AbstractMap.SimpleEntry<>("message", "Some of fields are empty"),
-                        new AbstractMap.SimpleEntry<>("details", e.getMessage()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
+    @ExceptionHandler(value = {ServiceValidateException.class})
+    public void handleValidateException(Exception e, HttpServletResponse response) throws IOException {
+        setResponseArgs(HttpStatus.BAD_REQUEST, response, Map.of(
+                "message", "Some of fields are not valid",
+                "details", e.getMessage()));
         logger.error(e.getMessage());
     }
 
-    @ExceptionHandler(value = {LoginReservedException.class,
-                               RoomNameReservedException.class})
-    public void handleReservedException(Exception e, HttpServletResponse response)
-            throws IOException {
-        response.setStatus(HttpStatus.CONFLICT.value());
-        response.setContentType(CONTENT_HEADER);
-        response.getWriter().write(objectMapper.writeValueAsString(Stream.of(
-                        new AbstractMap.SimpleEntry<>("message", e.getMessage()),
-                        new AbstractMap.SimpleEntry<>("type", e.getClass()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
+    @ExceptionHandler(value = {LoginReservedException.class, RoomNameReservedException.class})
+    public void handleReservedException(Exception e, HttpServletResponse response) throws IOException {
+        setResponseArgs(HttpStatus.CONFLICT, response, Map.of(
+                "message", e.getMessage(),
+                "type", e.getClass()));
         logger.warn(e.getMessage());
     }
 
-    @ExceptionHandler(value = { ServiceException.class })
+    @ExceptionHandler(value = {EntityNotFoundException.class, UsernameNotFoundException.class})
+    public void handleEntityNotFoundException(Exception e, HttpServletResponse response) throws IOException {
+        setResponseArgs(HttpStatus.NOT_FOUND, response, Map.of("details", e.getMessage()));
+        logger.warn(e.getMessage());
+    }
+
+    @ExceptionHandler(value = {ServiceException.class})
     public ResponseEntity<Object> handleServiceException(ServiceException ex) {
         logger.error("Business Exception: {}", ex.getMessage());
-        return new ResponseEntity<>("Business Exception: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>("Business Exception: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    private void setResponseArgs(HttpStatus status, HttpServletResponse response,
+                                 Map<String, ?> exceptionCaptionsToDescriptions) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType(CONTENT_HEADER);
+        response.getWriter().write(objectMapper.writeValueAsString(exceptionCaptionsToDescriptions));
     }
 }

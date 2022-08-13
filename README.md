@@ -26,7 +26,7 @@ first, register user
 ![register](img/register.png) <br>
 then, login (Get JWT token for further authorization)
 ![authorization](img/authorization.png) <br>
-## then you need to use the received token to make requests. ##
+## then you need to use the received token to make a requests. ##
 all rooms:
 ![rooms](img/rooms.png) <br>
 <br>

@@ -1,5 +1,6 @@
 package ru.job4j.chat.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,19 +15,22 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.job4j.chat.filter.JWTAuthenticationFilter;
 import ru.job4j.chat.filter.JWTAuthorizationFilter;
-import ru.job4j.chat.service.UserDetailsServiceImpl;
+import ru.job4j.chat.service.PersonService;
 
 import static ru.job4j.chat.filter.JWTAuthenticationFilter.SIGN_UP_URL;
 
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-    private UserDetailsServiceImpl userDetailsService;
+    private PersonService userDetailsService;
     private PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
 
-    public WebSecurity(UserDetailsServiceImpl userDetailsService, PasswordEncoder passwordEncoder) {
+    public WebSecurity(PersonService userDetailsService, PasswordEncoder passwordEncoder,
+                       ObjectMapper objectMapper) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -35,7 +39,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(), objectMapper))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
                 /* this disables session creation on Spring Security */
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

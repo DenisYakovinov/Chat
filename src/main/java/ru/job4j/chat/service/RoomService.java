@@ -3,15 +3,14 @@ package ru.job4j.chat.service;
 import org.postgresql.util.PSQLException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import ru.job4j.chat.exception.EntityNotFoundException;
 import ru.job4j.chat.exception.RoomNameReservedException;
 import ru.job4j.chat.exception.ServiceException;
+import ru.job4j.chat.exception.ServiceValidateException;
 import ru.job4j.chat.model.Room;
 import ru.job4j.chat.repository.RoomRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class RoomService {
@@ -23,23 +22,23 @@ public class RoomService {
     }
 
     public List<Room> getAll() {
-        List<Room> rooms = new ArrayList<>();
-        roomRepository.findAll().forEach(r -> {
-            r.setMessages(Collections.emptySet());
-            rooms.add(r);
-        });
-        return rooms;
+        return roomRepository.findAll();
     }
 
-    public Optional<Room> getById(long id) {
-        return roomRepository.findById(id);
+    public Room getById(long id) {
+        return roomRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("room with id = %d wasn't found", id)));
     }
 
-    public Optional<Room> getByIdWithMessages(long id) {
-        return Optional.ofNullable(roomRepository.findByIdWithMessages(id));
+    public Room getByIdWithMessages(long id) {
+        return roomRepository.findByIdWithMessages(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("room with id = %d wasn't found", id)));
     }
 
-    public Room createOrUpdate(Room room) {
+    public Room save(Room room) {
+        if (room.getName() == null) {
+            throw new ServiceValidateException("room name mustn't be null");
+        }
         try {
             return roomRepository.save(room);
         } catch (DataAccessException e) {

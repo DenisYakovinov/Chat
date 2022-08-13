@@ -1,14 +1,14 @@
 CREATE TABLE IF NOT EXISTS role
 (
     id       BIGSERIAL PRIMARY KEY NOT NULL,
-    name     VARCHAR(2000) UNIQUE
+    name     TEXT UNIQUE
     );
 
 CREATE TABLE IF NOT EXISTS person
 (
     id       BIGSERIAL PRIMARY KEY NOT NULL,
-    login    VARCHAR(2000) UNIQUE,
-    password VARCHAR(2000),
+    login    TEXT UNIQUE,
+    password TEXT,
     role_id BIGINT
     );
 
@@ -18,7 +18,7 @@ ALTER TABLE person ADD CONSTRAINT fk_person_role FOREIGN KEY (role_id) REFERENCE
 CREATE TABLE IF NOT EXISTS room
 (
     id      BIGSERIAL PRIMARY KEY NOT NULL,
-    name    VARCHAR(2000),
+    name    TEXT,
     admin_id BIGINT
     );
 
@@ -39,11 +39,3 @@ ALTER TABLE message ADD CONSTRAINT fk_message_room FOREIGN KEY (room_id) REFEREN
 
 ALTER TABLE message ADD CONSTRAINT fk_message_person FOREIGN KEY (person_id)  REFERENCES person(id)
     ON DELETE CASCADE ON UPDATE CASCADE;
-
-INSERT INTO role VALUES (1, 'user');
-INSERT INTO role VALUES (2, 'admin');
-INSERT INTO role VALUES (3, 'enterprise_admin');
-INSERT INTO person VALUES (1, 'adm01global', '$2a$10$uBQOILH2hDkzm2cFDVRw5O8HCzJPUbEIBagCQQeTZXZxWY4C44haK',
-(select id from role where name = 'enterprise_admin'));
-
-/*The password was encoded by BCrypt from "secret"*/

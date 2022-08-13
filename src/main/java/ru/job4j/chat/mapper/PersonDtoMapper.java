@@ -11,7 +11,7 @@ public interface PersonDtoMapper {
 
     @Mapping(target = "roleId", source = "person.role.id")
     @Mapping(target = "role", source = "person.role.name")
-    PersonDto toDTO(Person person);
+    PersonDto toDto(Person person);
 
     @Mapping(target = "role.id", source = "roleId")
     Person toModel(PersonCreationDto personCreationDTO);

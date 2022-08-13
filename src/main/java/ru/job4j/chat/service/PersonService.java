@@ -7,26 +7,37 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.job4j.chat.exception.EntityNotFoundException;
 import ru.job4j.chat.exception.ServiceException;
 import ru.job4j.chat.exception.LoginReservedException;
+import ru.job4j.chat.exception.ServiceValidateException;
 import ru.job4j.chat.model.Person;
 import ru.job4j.chat.repository.PersonRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class PersonService implements UserDetailsService {
 
     private final PersonRepository personRepository;
 
-    public UserDetailsServiceImpl(final PersonRepository personRepository) {
+    private final PasswordEncoder encoder;
+
+    public PersonService(final PersonRepository personRepository, PasswordEncoder encoder) {
         this.personRepository = personRepository;
+        this.encoder = encoder;
     }
 
     public Person save(Person person) {
+        if (person.getLogin() == null || person.getPassword() == null) {
+            throw new ServiceValidateException("Username and password mustn't be empty");
+        }
+        if (person.getPassword().length() < 6) {
+            throw new ServiceValidateException("Not really secure password");
+        }
+        person.setPassword(encoder.encode(person.getPassword()));
         try {
             return personRepository.save(person);
         } catch (DataAccessException e) {
@@ -46,25 +57,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public List<Person> getAll() {
-        List<Person> persons = new ArrayList<>();
-        personRepository.findAll().forEach(persons::add);
-        return persons;
+        return personRepository.findAll();
     }
 
-    public Optional<Person> findById(long id) {
-        return personRepository.findById(id);
+    public Person findById(long id) {
+        return personRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                String.format("user with id = %d wasn't found.", id)));
     }
 
-    public Optional<Person> findByLogin(String login) {
-        return Optional.ofNullable(personRepository.findByLogin(login));
+    public Person findByLogin(String login) {
+        return personRepository.findByLogin(login).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("user with login %s wasn't found.", login)));
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Person person = personRepository.findByLogin(username);
-        if (person == null) {
-            throw new UsernameNotFoundException("user was not found");
-        }
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        Person person = findByLogin(login);
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(person.getRole().getName());
         return new User(person.getLogin(), person.getPassword(), List.of(authority));
     }
