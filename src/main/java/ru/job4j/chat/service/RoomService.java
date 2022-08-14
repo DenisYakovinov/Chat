@@ -10,10 +10,11 @@ import ru.job4j.chat.exception.ServiceValidateException;
 import ru.job4j.chat.model.Room;
 import ru.job4j.chat.repository.RoomRepository;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @Service
-public class RoomService {
+public class RoomService implements GenericService<Room> {
 
     private final RoomRepository roomRepository;
 
@@ -21,10 +22,12 @@ public class RoomService {
         this.roomRepository = roomRepository;
     }
 
+    @Override
     public List<Room> getAll() {
         return roomRepository.findAll();
     }
 
+    @Override
     public Room getById(long id) {
         return roomRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("room with id = %d wasn't found", id)));
@@ -35,6 +38,7 @@ public class RoomService {
                 () -> new EntityNotFoundException(String.format("room with id = %d wasn't found", id)));
     }
 
+    @Override
     public Room save(Room room) {
         if (room.getName() == null) {
             throw new ServiceValidateException("room name mustn't be null");
@@ -53,6 +57,12 @@ public class RoomService {
         }
     }
 
+    public Room partialUpdate(Room room) throws InvocationTargetException, IllegalAccessException {
+        Room currentRoom = getById(room.getId());
+        return save(setNewNotNullFieldsToModel(room, currentRoom));
+    }
+
+    @Override
     public void delete(Room room) {
         roomRepository.delete(room);
     }

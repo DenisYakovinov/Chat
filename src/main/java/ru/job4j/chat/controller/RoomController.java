@@ -10,6 +10,7 @@ import ru.job4j.chat.mapper.RoomDtoMapper;
 import ru.job4j.chat.model.Room;
 import ru.job4j.chat.service.RoomService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,5 +59,11 @@ public class RoomController {
         room.setId(id);
         roomService.delete(room);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<RoomDto> partialUpdate(@RequestBody Room room) throws InvocationTargetException,
+            IllegalAccessException {
+        return ResponseEntity.status(HttpStatus.OK).body(roomDtoMapper.toDto(roomService.partialUpdate(room)));
     }
 }

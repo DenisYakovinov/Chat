@@ -47,7 +47,7 @@ public class PersonController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonDto> findById(@PathVariable long id) {
-        Person person = personService.findById(id);
+        Person person = personService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(personDtoMapper.toDto(person));
     }
 

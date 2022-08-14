@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,9 +49,9 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler(value = {ServiceException.class})
-    public ResponseEntity<Object> handleServiceException(ServiceException ex) {
-        logger.error("Business Exception: {}", ex.getMessage());
-        return new ResponseEntity<>("Business Exception: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public void handleServiceException(Exception e, HttpServletResponse response) throws IOException {
+        setResponseArgs(HttpStatus.BAD_REQUEST, response, Map.of("Service exception", e.getMessage()));
+        logger.error("Service Exception: {}", e.getMessage());
     }
 
     private void setResponseArgs(HttpStatus status, HttpServletResponse response,

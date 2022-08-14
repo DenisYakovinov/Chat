@@ -19,7 +19,7 @@ import ru.job4j.chat.repository.PersonRepository;
 import java.util.List;
 
 @Service
-public class PersonService implements UserDetailsService {
+public class PersonService implements UserDetailsService, GenericService<Person> {
 
     private final PersonRepository personRepository;
 
@@ -30,6 +30,7 @@ public class PersonService implements UserDetailsService {
         this.encoder = encoder;
     }
 
+    @Override
     public Person save(Person person) {
         if (person.getLogin() == null || person.getPassword() == null) {
             throw new ServiceValidateException("Username and password mustn't be empty");
@@ -52,15 +53,18 @@ public class PersonService implements UserDetailsService {
         }
     }
 
+    @Override
     public void delete(Person person) {
         personRepository.delete(person);
     }
 
+    @Override
     public List<Person> getAll() {
         return personRepository.findAll();
     }
 
-    public Person findById(long id) {
+    @Override
+    public Person getById(long id) {
         return personRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
                 String.format("user with id = %d wasn't found.", id)));
     }

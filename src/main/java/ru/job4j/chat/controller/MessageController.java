@@ -5,11 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.chat.dto.MessageCreationDto;
 import ru.job4j.chat.dto.MessageDto;
+import ru.job4j.chat.dto.RoomDto;
 import ru.job4j.chat.mapper.MessageDtoMapper;
 import ru.job4j.chat.model.Message;
+import ru.job4j.chat.model.Room;
 import ru.job4j.chat.service.MessageService;
 import ru.job4j.chat.service.PersonService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,13 +21,10 @@ import java.util.stream.Collectors;
 public class MessageController {
 
     private final MessageService messageService;
-    private final PersonService personService;
     private final MessageDtoMapper messageDtoMapper;
 
-    public MessageController(MessageService messageService, PersonService personService,
-                             MessageDtoMapper messageDtoMapper) {
+    public MessageController(MessageService messageService, MessageDtoMapper messageDtoMapper) {
         this.messageService = messageService;
-        this.personService = personService;
         this.messageDtoMapper = messageDtoMapper;
     }
 
@@ -53,7 +53,15 @@ public class MessageController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        messageService.delete(id);
+        Message message = new Message();
+        message.setId(id);
+        messageService.delete(message);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<MessageDto> partialUpdate(@RequestBody Message message) throws InvocationTargetException,
+            IllegalAccessException {
+        return ResponseEntity.status(HttpStatus.OK).body(messageDtoMapper.toDto(messageService.partialUpdate(message)));
     }
 }
