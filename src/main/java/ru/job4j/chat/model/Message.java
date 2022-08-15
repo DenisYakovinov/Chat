@@ -1,9 +1,8 @@
 package ru.job4j.chat.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
@@ -14,14 +13,16 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank(message = "text can't be empty or null")
     @Column(name = "text")
     private String text;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Room room;
 
+    @NotNull(message = "user (message owner) can't be null")
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;

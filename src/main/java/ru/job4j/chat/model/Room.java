@@ -1,6 +1,8 @@
 package ru.job4j.chat.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -13,6 +15,8 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank(message = "room name can't be empty or null")
+    @Size(min = 5, max = 255, message = "room name length should be between 5 and 255")
     @Column(name = "name")
     private String name;
 

@@ -14,7 +14,6 @@ import ru.job4j.chat.aspect.NonLoggableParameter;
 import ru.job4j.chat.exception.EntityNotFoundException;
 import ru.job4j.chat.exception.ServiceException;
 import ru.job4j.chat.exception.LoginReservedException;
-import ru.job4j.chat.exception.ServiceValidateException;
 import ru.job4j.chat.model.Person;
 import ru.job4j.chat.repository.PersonRepository;
 
@@ -34,13 +33,7 @@ public class PersonService implements UserDetailsService, GenericService<Person>
     }
 
     @Override
-    public Person save(@NonLoggableParameter Person person) {
-        if (person.getLogin() == null || person.getPassword() == null) {
-            throw new ServiceValidateException("Username and password mustn't be empty");
-        }
-        if (person.getPassword().length() < 6) {
-            throw new ServiceValidateException("Not really secure password");
-        }
+    public Person save(Person person) {
         person.setPassword(encoder.encode(person.getPassword()));
         try {
             return personRepository.save(person);

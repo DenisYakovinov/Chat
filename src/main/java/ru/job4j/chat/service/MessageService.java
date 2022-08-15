@@ -2,6 +2,7 @@ package ru.job4j.chat.service;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.job4j.chat.aspect.Loggable;
 import ru.job4j.chat.exception.EntityNotFoundException;
 import ru.job4j.chat.exception.ServiceValidateException;

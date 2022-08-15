@@ -1,20 +1,23 @@
 package ru.job4j.chat.service;
 
+import org.springframework.validation.annotation.Validated;
 import ru.job4j.chat.exception.ServiceException;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Validated
 public interface GenericService<T> {
 
     T getById(long id);
 
     List<T> getAll();
 
-    T save(T model);
+    T save(@Valid T model);
 
     void delete(T model);
 

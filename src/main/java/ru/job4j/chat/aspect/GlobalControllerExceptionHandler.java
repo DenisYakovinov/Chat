@@ -1,17 +1,23 @@
 package ru.job4j.chat.aspect;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.job4j.chat.exception.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
+
 import java.io.IOException;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
@@ -52,6 +58,17 @@ public class GlobalControllerExceptionHandler {
     public void handleServiceException(Exception e, HttpServletResponse response) throws IOException {
         setResponseArgs(HttpStatus.BAD_REQUEST, response, Map.of("Service exception", e.getMessage()));
         logger.error("Service Exception: {}", e.getMessage());
+    }
+
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    public ResponseEntity<Object> handleConstraintException(ConstraintViolationException e) {
+        logger.error("the data is not valid: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                e.getConstraintViolations().stream().map(x -> Map.of(
+                        x.getPropertyPath(),
+                        String.format("%s. Actual value: %s", x.getMessage(), x.getInvalidValue())
+                )).collect(Collectors.toList())
+        );
     }
 
     private void setResponseArgs(HttpStatus status, HttpServletResponse response,

@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class RoomController {
 
     private final RoomService roomService;
-
     private final RoomDtoMapper roomDtoMapper;
 
     public RoomController(RoomService roomService, RoomDtoMapper roomDtoMapper) {
