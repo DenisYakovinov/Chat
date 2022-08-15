@@ -3,6 +3,7 @@ package ru.job4j.chat.service;
 import org.postgresql.util.PSQLException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import ru.job4j.chat.aspect.Loggable;
 import ru.job4j.chat.exception.EntityNotFoundException;
 import ru.job4j.chat.exception.RoomNameReservedException;
 import ru.job4j.chat.exception.ServiceException;
@@ -14,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @Service
+@Loggable
 public class RoomService implements GenericService<Room> {
 
     private final RoomRepository roomRepository;

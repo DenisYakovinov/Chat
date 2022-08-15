@@ -2,6 +2,7 @@ package ru.job4j.chat.service;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import ru.job4j.chat.aspect.Loggable;
 import ru.job4j.chat.exception.EntityNotFoundException;
 import ru.job4j.chat.exception.ServiceValidateException;
 import ru.job4j.chat.model.Message;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Loggable
 public class MessageService implements GenericService<Message> {
 
     private final MessageRepository messageRepository;

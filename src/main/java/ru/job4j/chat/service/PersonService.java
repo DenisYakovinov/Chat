@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.job4j.chat.aspect.Loggable;
+import ru.job4j.chat.aspect.NonLoggableParameter;
 import ru.job4j.chat.exception.EntityNotFoundException;
 import ru.job4j.chat.exception.ServiceException;
 import ru.job4j.chat.exception.LoginReservedException;
@@ -19,6 +21,7 @@ import ru.job4j.chat.repository.PersonRepository;
 import java.util.List;
 
 @Service
+@Loggable
 public class PersonService implements UserDetailsService, GenericService<Person> {
 
     private final PersonRepository personRepository;
@@ -31,7 +34,7 @@ public class PersonService implements UserDetailsService, GenericService<Person>
     }
 
     @Override
-    public Person save(Person person) {
+    public Person save(@NonLoggableParameter Person person) {
         if (person.getLogin() == null || person.getPassword() == null) {
             throw new ServiceValidateException("Username and password mustn't be empty");
         }
@@ -54,7 +57,7 @@ public class PersonService implements UserDetailsService, GenericService<Person>
     }
 
     @Override
-    public void delete(Person person) {
+    public void delete(@NonLoggableParameter Person person) {
         personRepository.delete(person);
     }
 

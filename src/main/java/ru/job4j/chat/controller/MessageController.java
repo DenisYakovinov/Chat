@@ -3,14 +3,12 @@ package ru.job4j.chat.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.chat.aspect.Loggable;
 import ru.job4j.chat.dto.MessageCreationDto;
 import ru.job4j.chat.dto.MessageDto;
-import ru.job4j.chat.dto.RoomDto;
 import ru.job4j.chat.mapper.MessageDtoMapper;
 import ru.job4j.chat.model.Message;
-import ru.job4j.chat.model.Room;
 import ru.job4j.chat.service.MessageService;
-import ru.job4j.chat.service.PersonService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -18,6 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/message")
+@Loggable
 public class MessageController {
 
     private final MessageService messageService;

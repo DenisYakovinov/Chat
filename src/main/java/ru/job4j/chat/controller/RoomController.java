@@ -3,6 +3,7 @@ package ru.job4j.chat.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.chat.aspect.Loggable;
 import ru.job4j.chat.dto.RoomCreationDto;
 import ru.job4j.chat.dto.RoomDto;
 import ru.job4j.chat.dto.RoomWithoutMessagesDto;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/room")
+@Loggable
 public class RoomController {
 
     private final RoomService roomService;

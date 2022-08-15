@@ -1,10 +1,10 @@
 package ru.job4j.chat.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.chat.aspect.Loggable;
+import ru.job4j.chat.aspect.NonLoggableParameter;
 import ru.job4j.chat.dto.PersonCreationDto;
 import ru.job4j.chat.dto.PersonDto;
 import ru.job4j.chat.mapper.PersonDtoMapper;
@@ -17,9 +17,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
+@Loggable
 public class PersonController {
-
-    private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
 
     private static final long DEFAULT_USER_ROLE_ID = 1;
 
@@ -32,7 +31,7 @@ public class PersonController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<PersonDto> signUp(@RequestBody PersonCreationDto personCreationDto) {
+    public ResponseEntity<PersonDto> signUp(@RequestBody @NonLoggableParameter PersonCreationDto personCreationDto) {
         Person person = personDtoMapper.toModel(personCreationDto);
         person.setRole(new Role(DEFAULT_USER_ROLE_ID));
         return ResponseEntity.status(HttpStatus.CREATED).body(personDtoMapper.toDto(personService.save(person)));
@@ -52,7 +51,8 @@ public class PersonController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PersonDto> update(@RequestBody PersonCreationDto personCreationDto, @PathVariable long id) {
+    public ResponseEntity<PersonDto> update(@RequestBody @NonLoggableParameter PersonCreationDto personCreationDto,
+                                            @PathVariable long id) {
         Person person = personDtoMapper.toModel(personCreationDto);
         person.setId(id);
         return ResponseEntity.status(HttpStatus.OK).body(personDtoMapper.toDto(personService.save(person)));

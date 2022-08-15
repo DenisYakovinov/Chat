@@ -1,3 +1,4 @@
+[![Java CI with Maven](https://github.com/DenisYakovinov/job4j_chat/actions/workflows/maven.yml/badge.svg)](https://github.com/DenisYakovinov/job4j_chat/actions/workflows/maven.yml)
 # job4j_chat
 
 Creating a chat on the Rest API.<br>
