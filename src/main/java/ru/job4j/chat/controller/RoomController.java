@@ -11,7 +11,6 @@ import ru.job4j.chat.mapper.RoomDtoMapper;
 import ru.job4j.chat.model.Room;
 import ru.job4j.chat.service.RoomService;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +27,19 @@ public class RoomController {
         this.roomDtoMapper = roomDtoMapper;
     }
 
+    @PostMapping("/")
+    public ResponseEntity<RoomWithoutMessagesDto> create(@RequestBody RoomCreationDto roomCreationDto) {
+        Room room = roomDtoMapper.toModel(roomCreationDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(roomDtoMapper.toDtoWithNotMessages(roomService.save(room)));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<RoomDto> partialUpdate(@RequestBody RoomCreationDto roomDto, @PathVariable long id) {
+        Room room = roomDtoMapper.toModel(roomDto);
+        room.setId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(roomDtoMapper.toDto(roomService.partialUpdate(room)));
+    }
+
     @GetMapping("/")
     public ResponseEntity<List<RoomWithoutMessagesDto>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -41,30 +53,11 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.OK).body(roomDtoMapper.toDto(room));
     }
 
-    @PostMapping("/")
-    public ResponseEntity<RoomDto> create(@RequestBody RoomCreationDto roomCreationDto) {
-        Room room = roomDtoMapper.toModel(roomCreationDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(roomDtoMapper.toDto(roomService.save(room)));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<RoomDto> update(@RequestBody RoomCreationDto roomCreationDto, @PathVariable long id) {
-        Room room = roomDtoMapper.toModel(roomCreationDto);
-        room.setId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(roomDtoMapper.toDto(roomService.save(room)));
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
         Room room = new Room();
         room.setId(id);
         roomService.delete(room);
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    @PatchMapping("/")
-    public ResponseEntity<RoomDto> partialUpdate(@RequestBody Room room) throws InvocationTargetException,
-            IllegalAccessException {
-        return ResponseEntity.status(HttpStatus.OK).body(roomDtoMapper.toDto(roomService.partialUpdate(room)));
     }
 }

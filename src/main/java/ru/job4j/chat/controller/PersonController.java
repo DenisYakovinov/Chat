@@ -37,6 +37,14 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(personDtoMapper.toDto(personService.save(person)));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<PersonDto> partialUpdate(@RequestBody @NonLoggableParameter PersonCreationDto personCreationDto,
+                                                   @PathVariable long id) {
+        Person person = personDtoMapper.toModel(personCreationDto);
+        person.setId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(personDtoMapper.toDto(personService.partialUpdate(person)));
+    }
+
     @GetMapping("/")
     public ResponseEntity<List<PersonDto>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -48,14 +56,6 @@ public class PersonController {
     public ResponseEntity<PersonDto> findById(@PathVariable long id) {
         Person person = personService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(personDtoMapper.toDto(person));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<PersonDto> update(@RequestBody @NonLoggableParameter PersonCreationDto personCreationDto,
-                                            @PathVariable long id) {
-        Person person = personDtoMapper.toModel(personCreationDto);
-        person.setId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(personDtoMapper.toDto(personService.save(person)));
     }
 
     @DeleteMapping("/{id}")

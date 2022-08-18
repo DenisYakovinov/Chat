@@ -1,16 +1,14 @@
 package ru.job4j.chat.service;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.chat.aspect.Loggable;
 import ru.job4j.chat.exception.EntityNotFoundException;
 import ru.job4j.chat.exception.ServiceValidateException;
+import ru.job4j.chat.mapper.MessageDtoMapper;
 import ru.job4j.chat.model.Message;
-import ru.job4j.chat.model.Person;
 import ru.job4j.chat.repository.MessageRepository;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,11 +17,11 @@ import java.util.Objects;
 public class MessageService implements GenericService<Message> {
 
     private final MessageRepository messageRepository;
-    private final PersonService personService;
+    private final MessageDtoMapper messageMapper;
 
-    public MessageService(MessageRepository messageRepository, PersonService personService) {
+    public MessageService(MessageRepository messageRepository, MessageDtoMapper messageMapper) {
         this.messageRepository = messageRepository;
-        this.personService = personService;
+        this.messageMapper = messageMapper;
     }
 
     @Override
@@ -42,27 +40,28 @@ public class MessageService implements GenericService<Message> {
         if (message.getRoom().getId() == 0) {
             throw new ServiceValidateException("need to specify the room id");
         }
-        if (message.getText() == null || message.getText().trim().length() == 0) {
-            throw new ServiceValidateException("message text mustn't be empty");
-        }
-        Person requestPerson = personService.findByLogin(
-                (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        message.setPerson(requestPerson);
         return messageRepository.save(message);
     }
 
-    public Message partialUpdate(Message message) throws InvocationTargetException, IllegalAccessException {
-        Message currentMessage = getById(message.getId());
-        return save(setNewNotNullFieldsToModel(message, currentMessage));
+    @Override
+    public Message partialUpdate(Message message) {
+        Message oldMessage = getById(message.getId());
+        checkMessageOwner(message, oldMessage);
+        messageMapper.updateNewNotNullFieldsToMessage(message, oldMessage);
+        return save(oldMessage);
     }
 
     @Override
+    @Transactional
     public void delete(Message message) {
-        Person requestUser = personService.findByLogin(
-                (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        if (!Objects.equals(requestUser.getId(), message.getPerson().getId())) {
-            throw new ServiceValidateException(String.format("another user's message (id = %d)", message.getId()));
-        }
+        Message oldMessage = getById(message.getId());
+        checkMessageOwner(message, oldMessage);
         messageRepository.delete(message);
+    }
+
+    private void checkMessageOwner(Message newMessage, Message oldMessage) {
+        if (!Objects.equals(newMessage.getPerson().getId(), oldMessage.getPerson().getId())) {
+            throw new ServiceValidateException(String.format("another user's message (id = %d)", newMessage.getId()));
+        }
     }
 }

@@ -13,7 +13,7 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "text can't be empty or null")
+    @NotBlank(message = "text can't be empty")
     @Column(name = "text")
     private String text;
 
@@ -22,7 +22,6 @@ public class Message {
     private Room room;
 
     @NotNull(message = "user (message owner) can't be null")
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;

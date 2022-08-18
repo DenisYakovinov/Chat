@@ -6,7 +6,7 @@ public class PersonDto {
 
     private long id;
     private String login;
-    private String role;
+    private String roleName;
     private long roleId;
 
     public PersonDto() {
@@ -28,12 +28,12 @@ public class PersonDto {
         this.id = id;
     }
 
-    public String getRole() {
-        return role;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public long getRoleId() {

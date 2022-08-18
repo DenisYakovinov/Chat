@@ -6,7 +6,6 @@ public class MessageCreationDto {
 
     private String text;
     private long roomId;
-    private long personId;
 
     public MessageCreationDto() {
     }
@@ -25,14 +24,6 @@ public class MessageCreationDto {
 
     public void setRoomId(long roomId) {
         this.roomId = roomId;
-    }
-
-    public long getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(long personId) {
-        this.personId = personId;
     }
 
     @Override

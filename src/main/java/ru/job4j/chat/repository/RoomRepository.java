@@ -13,6 +13,8 @@ public interface RoomRepository extends CrudRepository<Room, Long> {
     @Query("from Room r left join fetch r.messages where r.id = :rId")
     Optional<Room> findByIdWithMessages(@Param("rId") long id);
 
+    Optional<Room> findByName(String name);
+
     @Override
     List<Room> findAll();
 }

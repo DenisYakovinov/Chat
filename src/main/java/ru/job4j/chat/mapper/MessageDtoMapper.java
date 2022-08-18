@@ -1,7 +1,6 @@
 package ru.job4j.chat.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import ru.job4j.chat.dto.MessageCreationDto;
 import ru.job4j.chat.dto.MessageDto;
 import ru.job4j.chat.model.Message;
@@ -15,4 +14,18 @@ public interface MessageDtoMapper {
 
     @Mapping(target = "room.id", source = "roomId")
     Message toModel(MessageCreationDto messageDTO);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateNewNotNullFieldsToMessage(Message newMessage, @MappingTarget Message message);
+
+    @AfterMapping
+    default Message afterMapping(@MappingTarget Message message) {
+        if (message.getRoom() != null && message.getRoom().getId() == 0) {
+            message.setRoom(null);
+        }
+        if (message.getPerson() != null && message.getPerson().getId() == 0) {
+            message.setPerson(null);
+        }
+        return message;
+    }
 }

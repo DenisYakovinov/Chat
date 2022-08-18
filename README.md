@@ -1,4 +1,4 @@
-[![Java CI with Maven](https://github.com/DenisYakovinov/job4j_chat/actions/workflows/maven.yml/badge.svg)](https://github.com/DenisYakovinov/job4j_chat/actions/workflows/maven.yml)
+
 # job4j_chat
 
 Creating a chat on the Rest API.<br>
@@ -31,5 +31,11 @@ then, login (Get JWT token for further authorization)
 all rooms:
 ![rooms](img/rooms.png) <br>
 <br>
-further in progress..
+create a new room:
+![newRoom](img/newRoom.png) <br>
+create a new message:
+![newMessage](img/newMessage.png) <br>
+get room with messages:
+![roomWithMessage](img/roomWithMessage.png) <br>
+
 
