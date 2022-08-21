@@ -1,4 +1,4 @@
-
+[![Java CI with Maven](https://github.com/DenisYakovinov/job4j_chat/actions/workflows/maven.yml/badge.svg)](https://github.com/DenisYakovinov/job4j_chat/actions/workflows/maven.yml)
 # job4j_chat
 
 Creating a chat on the Rest API.<br>
@@ -38,4 +38,25 @@ create a new message:
 get room with messages:
 ![roomWithMessage](img/roomWithMessage.png) <br>
 
+To run the app (need at least java 11), clone the project
+```
+https://github.com/DenisYakovinov/job4j_chat.git
+```
+then using terminal from root directory:<br>
 
+1. run db in docker
+```
+docker-compose up chat_db
+```
+2. then
+```
+mvn install
+```
+3. and run
+```
+java -jar target/job4j_chat-1.0-SNAPSHOT.jar
+```
+4. or
+```
+mvn spring-boot:run
+```
