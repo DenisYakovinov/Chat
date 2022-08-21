@@ -1,11 +1,19 @@
 package ru.job4j.chat.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.Objects;
 
+@Schema(description = "room response DTO without messages")
 public class RoomWithoutMessagesDto {
 
+    @Schema(description = "room id")
     private long id;
+
+    @Schema(description = "room name")
     private String name;
+
+    @Schema(description = "room admin DTO")
     private PersonDto admin;
 
     public long getId() {

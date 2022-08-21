@@ -1,12 +1,22 @@
 package ru.job4j.chat.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.Objects;
 
+@Schema(description = "message response DTO")
 public class MessageDto {
 
+    @Schema(description = "message id")
     private long id;
+
+    @Schema(description = "message body")
     private String text;
+
+    @Schema(description = "id of the room where the message is located")
     private long roomId;
+
+    @Schema(description = "id of the message owner person")
     private long personId;
 
     public MessageDto() {

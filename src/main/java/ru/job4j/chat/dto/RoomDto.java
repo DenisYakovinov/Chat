@@ -1,14 +1,24 @@
 package ru.job4j.chat.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Schema(description = "room response DTO")
 public class RoomDto {
 
+    @Schema(description = "room id")
     private long id;
+
+    @Schema(description = "room name")
     private String name;
+
+    @Schema(description = "room admin DTO")
     private PersonDto admin;
+
+    @Schema(description = "all room messages")
     private Set<MessageDto> messages = new HashSet<>();
 
     public RoomDto() {

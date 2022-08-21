@@ -1,12 +1,17 @@
 package ru.job4j.chat.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.Objects;
 
+@Schema(description = "person creation request")
 public class PersonCreationDto {
 
+    @Schema(description = "user login")
     private String login;
+
+    @Schema(description = "user password")
     private String password;
-    private long roleId;
 
     public PersonCreationDto() {
     }
@@ -17,14 +22,6 @@ public class PersonCreationDto {
 
     public void setLogin(String login) {
         this.login = login;
-    }
-
-    public long getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(long roleId) {
-        this.roleId = roleId;
     }
 
     public String getPassword() {

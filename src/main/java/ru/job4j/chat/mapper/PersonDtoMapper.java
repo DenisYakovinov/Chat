@@ -13,7 +13,6 @@ public interface PersonDtoMapper {
     @Mapping(target = "roleName", source = "person.role.name")
     PersonDto toDto(Person person);
 
-    @Mapping(target = "role.id", source = "roleId")
     Person toModel(PersonCreationDto personCreationDTO);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

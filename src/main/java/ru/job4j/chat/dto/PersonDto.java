@@ -1,12 +1,22 @@
 package ru.job4j.chat.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.Objects;
 
+@Schema(description = "person response DTO")
 public class PersonDto {
 
+    @Schema(description = "person id")
     private long id;
+
+    @Schema(description = "user login")
     private String login;
+
+    @Schema(description = "user role name")
     private String roleName;
+
+    @Schema(description = "role id")
     private long roleId;
 
     public PersonDto() {

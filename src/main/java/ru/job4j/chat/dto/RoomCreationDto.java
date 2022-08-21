@@ -1,10 +1,16 @@
 package ru.job4j.chat.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.Objects;
 
+@Schema(description = "room creation request")
 public class RoomCreationDto {
 
+    @Schema(description = "room name")
     private String name;
+
+    @Schema(description = "room administrator user number")
     private long adminId;
 
     public RoomCreationDto() {

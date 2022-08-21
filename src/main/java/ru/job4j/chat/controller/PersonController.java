@@ -1,5 +1,8 @@
 package ru.job4j.chat.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/users")
 @Loggable
+@Tag(name = "users", description = "methods for users")
 public class PersonController {
 
     private static final long DEFAULT_USER_ROLE_ID = 1;
@@ -31,21 +35,30 @@ public class PersonController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<PersonDto> signUp(@RequestBody @NonLoggableParameter PersonCreationDto personCreationDto) {
+    @Operation(summary = "register a new user")
+    public ResponseEntity<PersonDto> signUp(@RequestBody
+                                            @NonLoggableParameter
+                                            @Parameter(description = "user creation DTO")
+                                            PersonCreationDto personCreationDto) {
         Person person = personDtoMapper.toModel(personCreationDto);
         person.setRole(new Role(DEFAULT_USER_ROLE_ID));
         return ResponseEntity.status(HttpStatus.CREATED).body(personDtoMapper.toDto(personService.save(person)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PersonDto> partialUpdate(@RequestBody @NonLoggableParameter PersonCreationDto personCreationDto,
-                                                   @PathVariable long id) {
+    @Operation(summary = "update a user")
+    public ResponseEntity<PersonDto> partialUpdate(@RequestBody @NonLoggableParameter
+                                                   @Parameter(description = "User creation DTO")
+                                                   PersonCreationDto personCreationDto,
+                                                   @PathVariable
+                                                   @Parameter(description = "user id", required = true) long id) {
         Person person = personDtoMapper.toModel(personCreationDto);
         person.setId(id);
         return ResponseEntity.status(HttpStatus.OK).body(personDtoMapper.toDto(personService.partialUpdate(person)));
     }
 
     @GetMapping("/")
+    @Operation(summary = "get list of all users")
     public ResponseEntity<List<PersonDto>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(
                 personService.getAll().stream().map(personDtoMapper::toDto)
@@ -53,13 +66,16 @@ public class PersonController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PersonDto> findById(@PathVariable long id) {
+    @Operation(summary = "get a user by id")
+    public ResponseEntity<PersonDto> findById(@PathVariable
+                                              @Parameter(description = "user id", required = true) long id) {
         Person person = personService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(personDtoMapper.toDto(person));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    @Operation(summary = "delete user by id")
+    public ResponseEntity<Void> delete(@PathVariable @Parameter(description = "user id", required = true) int id) {
         Person person = new Person();
         person.setId(id);
         personService.delete(person);
