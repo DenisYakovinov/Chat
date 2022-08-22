@@ -41,6 +41,18 @@ public class PersonService implements GenericService<Person> {
 
     @Override
     @Transactional
+    public Person update(@NonLoggableParameter Person person) {
+        long id = person.getId();
+        if (!personRepository.existsById(id)) {
+            throw new EntityNotFoundException(
+                    String.format("can't update, user with id = %d wasn't found.", id));
+        }
+        person.setPassword(encoder.encode(person.getPassword()));
+        return personRepository.save(person);
+    }
+
+    @Override
+    @Transactional
     public Person partialUpdate(@NonLoggableParameter Person person) {
         Person oldPerson = getById(person.getId());
         personMapper.updateNewNotNullFieldsToPerson(person, oldPerson);
@@ -67,9 +79,9 @@ public class PersonService implements GenericService<Person> {
     @Transactional
     public void delete(@NonLoggableParameter Person person) {
         long id = person.getId();
-        if (personRepository.findById(person.getId()).isEmpty()) {
+        if (!personRepository.existsById(id)) {
             throw new EntityNotFoundException(
-                    String.format("can't delete, user with id = %d wasn't found.", id));
+                    String.format("can't delete, user with id = %d wasn't found", id));
         }
         personRepository.delete(person);
     }

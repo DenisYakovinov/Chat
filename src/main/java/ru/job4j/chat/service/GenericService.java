@@ -16,5 +16,7 @@ public interface GenericService<T> {
 
     void delete(T model);
 
+    T update(T model);
+
     T partialUpdate(T model);
 }

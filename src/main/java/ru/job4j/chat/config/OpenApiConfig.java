@@ -12,10 +12,12 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
+    private static final String APP_URL = "http://localhost:8080";
+
     @Bean
     public OpenAPI customOpenAPI() {
         Server defaultServer = new Server();
-        defaultServer.setUrl("http://localhost:8080");
+        defaultServer.setUrl(APP_URL);
         return new OpenAPI()
                 .components(new Components())
                 .info(new Info().title("Imaginary Chat Application API").version("1.0.0"))

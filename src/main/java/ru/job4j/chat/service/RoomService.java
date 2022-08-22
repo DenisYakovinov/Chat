@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.chat.aspect.Loggable;
 import ru.job4j.chat.exception.EntityNotFoundException;
 import ru.job4j.chat.exception.RoomNameReservedException;
-import ru.job4j.chat.exception.ServiceValidateException;
 import ru.job4j.chat.mapper.RoomDtoMapper;
 import ru.job4j.chat.model.Room;
 import ru.job4j.chat.repository.RoomRepository;
@@ -48,12 +47,21 @@ public class RoomService implements GenericService<Room> {
             throw new RoomNameReservedException(
                     String.format("Room name '%s' already reserved please try again", room.getName()));
         }
-        if (room.getName() == null) {
-            throw new ServiceValidateException("room name mustn't be null");
+        return roomRepository.save(room);
+    }
+
+    @Override
+    @Transactional
+    public Room update(Room room) {
+        long id = room.getId();
+        if (!roomRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format("can't delete, %s %s", NOT_FOUND_ENTITY, id));
         }
         return roomRepository.save(room);
     }
 
+    @Override
+    @Transactional
     public Room partialUpdate(Room room) {
         Room oldRoom = getById(room.getId());
         roomMapper.updateNewNotNullFieldsToRoom(room, oldRoom);
@@ -64,7 +72,7 @@ public class RoomService implements GenericService<Room> {
     @Transactional
     public void delete(Room room) {
         long id = room.getId();
-        if (roomRepository.findById(id).isEmpty()) {
+        if (!roomRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format("can't delete, %s %s", NOT_FOUND_ENTITY, id));
         }
         roomRepository.delete(room);

@@ -19,9 +19,9 @@ in progress..
 ![scheme_db](img/scheme_db.png) <br>
 
 Swagger UI documentation available via link ```localhost:8080/swagger-ui/index.html```
-![swaggerMain](img/swaggerMain.png) <br>
+![swaggerMainPage](img/swaggerMainPage.png) <br>
 ![swaggerPostUser](img/swaggerPostUser.png) <br>
-![swaggerRoom](img/swaggerRoom.png) <br>
+![swaggerRoomById](img/swaggerRoomById.png) <br>
 ![swaggerSchm](img/swaggerSchm.png) <br>
 
 To run the app (need at least java 11), clone the project

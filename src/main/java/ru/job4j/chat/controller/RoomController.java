@@ -40,8 +40,19 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomDtoMapper.toDtoWithNotMessages(roomService.save(room)));
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "update a room by id")
+    public ResponseEntity<RoomDto> update(@RequestBody
+                                          @Parameter(description = "room creation DTO")
+                                          RoomCreationDto roomCreationDto,
+                                          @PathVariable @Parameter(description = "room id", required = true) long id) {
+        Room room = roomDtoMapper.toModel(roomCreationDto);
+        room.setId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(roomDtoMapper.toDto(roomService.update(room)));
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "partial update a room by id")
     public ResponseEntity<RoomDto> partialUpdate(@RequestBody
                                                  @Parameter(description = "room creation DTO") RoomCreationDto roomDto,
                                                  @PathVariable @Parameter(description = "room id", required = true)
@@ -60,7 +71,7 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "get all rooms with messages")
+    @Operation(summary = "get a room by id with messages")
     public ResponseEntity<RoomDto> getById(@PathVariable @Parameter(description = "room id", required = true) long id) {
         Room room = roomService.getByIdWithMessages(id);
         return ResponseEntity.status(HttpStatus.OK).body(roomDtoMapper.toDto(room));

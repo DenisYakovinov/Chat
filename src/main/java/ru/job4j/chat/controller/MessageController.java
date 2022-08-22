@@ -59,8 +59,26 @@ public class MessageController {
                 messageDtoMapper.toDto(messageService.save(message)));
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "update a message by id")
+    public ResponseEntity<MessageDto> update(@RequestBody
+                                             @Parameter(description = "Message creation DTO")
+                                             MessageCreationDto messageCreationDto,
+                                             @Parameter(description = "Message id", required = true)
+                                             @PathVariable long id,
+                                             @Parameter(hidden = true)
+                                             @CurrentSecurityContext(expression = "authentication?.name")
+                                             String currentUser) {
+        Message message = messageDtoMapper.toModel(messageCreationDto);
+        Person requestUser = personService.findByLogin(currentUser);
+        message.setPerson(requestUser);
+        message.setId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                messageDtoMapper.toDto(messageService.update(message)));
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "partial update a message by id")
     public ResponseEntity<MessageDto> partialUpdate(@RequestBody
                                                     @Parameter(description = "Message creation DTO")
                                                     MessageCreationDto messageCreationDto,

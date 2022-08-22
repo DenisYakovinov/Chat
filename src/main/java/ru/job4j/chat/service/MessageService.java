@@ -44,6 +44,19 @@ public class MessageService implements GenericService<Message> {
     }
 
     @Override
+    @Transactional
+    public Message update(Message message) {
+        long id = message.getId();
+        if (!messageRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format("can't update, message with id = %d wasn't found", id));
+        }
+        Message oldMessage = getById(message.getId());
+        checkMessageOwner(message, oldMessage);
+        return messageRepository.save(message);
+    }
+
+    @Override
+    @Transactional
     public Message partialUpdate(Message message) {
         Message oldMessage = getById(message.getId());
         checkMessageOwner(message, oldMessage);

@@ -45,8 +45,20 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(personDtoMapper.toDto(personService.save(person)));
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "update a user")
+    public ResponseEntity<PersonDto> update(@RequestBody @NonLoggableParameter
+                                            @Parameter(description = "User creation DTO")
+                                            PersonCreationDto personCreationDto,
+                                            @Parameter(description = "user id", required = true)
+                                            @PathVariable long id) {
+        Person person = personDtoMapper.toModel(personCreationDto);
+        person.setId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(personDtoMapper.toDto(personService.update(person)));
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "partial update a user")
     public ResponseEntity<PersonDto> partialUpdate(@RequestBody @NonLoggableParameter
                                                    @Parameter(description = "User creation DTO")
                                                    PersonCreationDto personCreationDto,
